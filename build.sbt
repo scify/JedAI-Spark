@@ -33,5 +33,8 @@ libraryDependencies += "org.jgrapht" % "jgrapht-core" % "0.9.0"//% "1.0.1"
 // https://mvnrepository.com/artifact/org.json/json
 libraryDependencies += "org.json" % "json" % "20170516"
 
+libraryDependencies += "com.holdenkarau" %% "spark-testing-base" % "2.1.0_0.14.0" % "test"
+
+Test / parallelExecution := false
 
 //mainClass in Compile := Some("Experiments.Main")
