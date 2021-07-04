@@ -212,12 +212,16 @@ class LSHSpec extends WordSpec with Matchers with SharedSparkContext {
         )
         val actual = LSH.createBlocks(
           profiles = dataset1.union(dataset2),
-          numHashes = 128,
+          numHashes = 4,
           targetThreshold = 0.5,
           separatorIDs = Array(dataset1.map(_.id).max)
         ).collect
+
         val expected = Seq(
-          BlockClean(blockID = 0, profiles = Array(Set(0),Set(1)))
+          BlockClean(blockID = -2107927677, profiles = Array(Set(0),Set(1))),
+          BlockClean(blockID = 133683514, profiles = Array(Set(0),Set(1))),
+          BlockClean(blockID = 260160282, profiles = Array(Set(0),Set(1))),
+          BlockClean(blockID = 2082721775, profiles = Array(Set(0),Set(1)))
         )
         actual.map(_.blockID) should contain theSameElementsAs expected.map(_.blockID)
         actual.map(_.profiles) should contain theSameElementsAs expected.map(_.profiles)
