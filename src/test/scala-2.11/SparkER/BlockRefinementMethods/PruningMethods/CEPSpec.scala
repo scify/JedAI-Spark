@@ -13,7 +13,7 @@ class CEPSpec extends WordSpec with Matchers with SharedSparkContext {
     val m = blocks.map { case block => (block.blockID, block.profiles) }.collect.toMap
     blocks.sparkContext.broadcast(m)
   }
-  "CEP" should {
+  "CEP.CEP" should {
     "retain the K edges with the maximum weight" in {
       // A brief explanation of this algorithm is as follows:
       //
