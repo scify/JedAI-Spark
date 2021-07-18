@@ -39,16 +39,16 @@ class WEPSpec extends WordSpec with Matchers with SharedSparkContext {
         //
         // 3. Prune edges that are lower than w_min.
         //
-        // o CBS(p0,p1)=2
-        // o CBS(p0,p2)=2
-        // o CBS(p1,p2)=2 >= w_min
-        // x CBS(p0,p3)=1 < w_min
-        // x CBS(p0,p4)=1
-        // x CBS(p1,p3)=1
-        // x CBS(p1,p4)=1
-        // x CBS(p2,p3)=1
-        // x CBS(p2,p4)=1
-        // x CBS(p3,p4)=1
+        // ✓ CBS(p0,p1)=2
+        // ✓ CBS(p0,p2)=2
+        // ✓ CBS(p1,p2)=2 >= w_min
+        //   CBS(p0,p3)=1 < w_min
+        //   CBS(p0,p4)=1
+        //   CBS(p1,p3)=1
+        //   CBS(p1,p4)=1
+        //   CBS(p2,p3)=1
+        //   CBS(p2,p4)=1
+        //   CBS(p3,p4)=1
         //
         // For more detail, See 3.3.1:
         // http://disi.unitn.it/~themis/publications/tkde13-metablocking.pdf
@@ -92,10 +92,10 @@ class WEPSpec extends WordSpec with Matchers with SharedSparkContext {
         //
         // 3. Prune edges that are lower than w_min.
         //
-        // o CBS(p0,p2)=2 >= w_min
-        // x CBS(p0,p3)=1 < w_min
-        // o CBS(p1,p2)=2 >= w_min
-        // x CBS(p1,p3)=1 < w_min
+        // ✓ CBS(p0,p2)=2 >= w_min
+        //   CBS(p0,p3)=1 < w_min
+        // ✓ CBS(p1,p2)=2 >= w_min
+        //   CBS(p1,p3)=1 < w_min
         //
         // For more detail, See 3.3.1:
         // http://disi.unitn.it/~themis/publications/tkde13-metablocking.pdf
