@@ -37,6 +37,7 @@ class CNPSpec extends WordSpec with Matchers with SharedSparkContext {
         // CBS(p2,p4)=1
         // CBS(p3,p3)=1
         // CBS(p3,p4)=1
+        // CBS(p4,p4)=1
         //
         // 2. Calc the cardinality threshold (i.e., k)
         //
