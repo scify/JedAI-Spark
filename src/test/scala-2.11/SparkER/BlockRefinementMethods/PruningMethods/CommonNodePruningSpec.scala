@@ -192,7 +192,7 @@ class CommonNodePruningSpec extends WordSpec with Matchers with SharedSparkConte
         // ||b1|| = 1
         //
         // WHERE:
-        // B(px,py) is the number of blocks that contain px and py.
+        // B(px,py) is the set of blocks that contain px and py.
         // ||bx|| is the block cardinality.
         //
         // ARCS(p0,p2,B) = CBS(p0,p2)/||b0|| = 1/4 = 0.25
