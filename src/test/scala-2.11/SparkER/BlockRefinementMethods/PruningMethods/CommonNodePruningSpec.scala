@@ -198,7 +198,7 @@ class CommonNodePruningSpec extends WordSpec with Matchers with SharedSparkConte
         // ARCS(p0,p2,B) = CBS(p0,p2)/||b0|| = 1/4 = 0.25
         // ARCS(p0,p3,B) = CBS(p0,p3)/||b0|| = 1/4 = 0.25
         // ARCS(p1,p2,B) = CBS(p1,p2)/||b0|| = 1/4 = 0.25
-        // ARCS(p1,p3,B) = CBS(p1,p3)/||b0|| + (CBS(p1,p3)/||b0||)/||b1|| = 2/4 + 0.5/1 = 0.5
+        // ARCS(p1,p3,B) = (CBS(p1,p3)/||b0||)/||b1|| = 0.5/1 = 0.5
         //
         // Note that this implementation depends on CBS but the original paper doesn't.
         // For more info, see fig.4:
