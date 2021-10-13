@@ -34,10 +34,10 @@ libraryDependencies += "org.jgrapht" % "jgrapht-core" % "0.9.0"//% "1.0.1"
 // https://mvnrepository.com/artifact/org.json/json
 libraryDependencies += "org.json" % "json" % "20170516"
 
-// https://mvnrepository.com/artifact/org.apache.livy/livy-core
-//libraryDependencies += "org.apache.livy" %% "livy-core" % "0.7.0-incubating"
-
 libraryDependencies += "com.holdenkarau" %% "spark-testing-base" % "2.1.0_0.14.0" % Test
+
+// https://mvnrepository.com/artifact/org.apache.livy/livy-core
+libraryDependencies += "org.apache.livy" %% "livy-core" % "0.7.1-incubating" exclude("com.esotericsoftware.kryo", "kryo")
 
 Test / parallelExecution := false
 
