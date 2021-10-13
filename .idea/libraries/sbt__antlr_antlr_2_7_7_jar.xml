@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sbt: antlr:antlr:2.7.7:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.cache/coursier/v1/https/repo1.maven.org/maven2/antlr/antlr/2.7.7/antlr-2.7.7.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

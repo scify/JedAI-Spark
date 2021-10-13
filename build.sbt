@@ -38,3 +38,9 @@ libraryDependencies += "com.holdenkarau" %% "spark-testing-base" % "2.1.0_0.14.0
 Test / parallelExecution := false
 
 //mainClass in Compile := Some("Experiments.Main")
+
+
+assemblyMergeStrategy in assembly := {
+	case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+	case x => MergeStrategy.first
+}
