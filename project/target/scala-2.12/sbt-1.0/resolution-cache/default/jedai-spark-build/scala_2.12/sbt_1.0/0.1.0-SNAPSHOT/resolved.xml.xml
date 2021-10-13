@@ -4,7 +4,7 @@
 		module="jedai-spark-build"
 		revision="0.1.0-SNAPSHOT"
 		status="integration"
-		publication="20210120123459"
+		publication="20211013142111"
 		e:sbtVersion="1.0" e:scalaVersion="2.12"
 	>
 		<description>
@@ -41,6 +41,7 @@
 			<artifact name="global-plugins" type="doc" ext="jar" conf="compile" e:classifier="javadoc"/>
 		</dependency>
 		<dependency org="com.eed3si9n" name="sbt-assembly" rev="0.14.10" conf="compile->default(compile)" e:sbtVersion="1.0" e:scalaVersion="2.12"/>
+		<dependency org="net.virtual-void" name="sbt-dependency-graph" rev="0.10.0-RC1" conf="compile->default(compile)" e:sbtVersion="1.0" e:scalaVersion="2.12"/>
 		<override org="org.scala-sbt" module="scripted-plugin_2.12" matcher="exact" rev="1.2.8"/>
 	</dependencies>
 </ivy-module>
