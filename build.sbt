@@ -1,4 +1,3 @@
-organization := "org.scify"
 name := "spark_er"
 version := "1.0"
 scalaVersion := "2.11.8"
@@ -37,8 +36,14 @@ libraryDependencies += "org.json" % "json" % "20170516"
 // https://mvnrepository.com/artifact/org.apache.livy/livy-core
 libraryDependencies += "org.apache.livy" %% "livy-core" % "0.7.0-incubating"
 
+libraryDependencies += "com.holdenkarau" %% "spark-testing-base" % "2.1.0_0.14.0" % "test"
+
+Test / parallelExecution := false
+
+//mainClass in Compile := Some("Experiments.Main")
+
 
 assemblyMergeStrategy in assembly := {
-    case PathList("META-INF", xs@_*) => MergeStrategy.discard
-    case x => MergeStrategy.first
+	case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+	case x => MergeStrategy.first
 }

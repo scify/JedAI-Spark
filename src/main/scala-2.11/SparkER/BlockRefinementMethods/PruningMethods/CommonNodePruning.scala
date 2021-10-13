@@ -285,10 +285,10 @@ object CommonNodePruning {
         val commonBlocks = weights(neighbourID)
         val EJS = {
           if (useEntropy) {
-            ((commonBlocks / (numberOfProfileBlocks + profileBlocksSizeIndex.value(neighbourID) - commonBlocks)) * entropies(neighbourID)) * Math.log10(numberOfEdges / edgesPerProfile.value.getOrElse(neighbourID, 0.00000000001) * Math.log10(numberOfEdges / profileNumberOfNeighbours))
+            ((commonBlocks / (numberOfProfileBlocks + profileBlocksSizeIndex.value(neighbourID) - commonBlocks)) * entropies(neighbourID)) * Math.log10(numberOfEdges / edgesPerProfile.value.getOrElse(neighbourID, 0.00000000001)) * Math.log10(numberOfEdges / profileNumberOfNeighbours)
           }
           else {
-            (commonBlocks / (numberOfProfileBlocks + profileBlocksSizeIndex.value(neighbourID) - commonBlocks)) * Math.log10(numberOfEdges / edgesPerProfile.value.getOrElse(neighbourID, 0.00000000001) * Math.log10(numberOfEdges / profileNumberOfNeighbours))
+            (commonBlocks / (numberOfProfileBlocks + profileBlocksSizeIndex.value(neighbourID) - commonBlocks)) * Math.log10(numberOfEdges / edgesPerProfile.value.getOrElse(neighbourID, 0.00000000001)) * Math.log10(numberOfEdges / profileNumberOfNeighbours)
           }
         }
         weights.update(neighbourID, EJS)
