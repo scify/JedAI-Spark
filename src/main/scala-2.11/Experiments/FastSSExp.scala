@@ -6,23 +6,37 @@ import SparkER.DataStructures.WeightedEdge
 import SparkER.EntityClustering.{ConnectedComponentsClustering, EntityClusterUtils}
 import SparkER.SimJoins.Commons.CommonFunctions
 import SparkER.SimJoins.SimJoins.{EDJoin, FastSS}
-import SparkER.Wrappers.JSONWrapper
+import SparkER.Wrappers.{CSVWrapper, JSONWrapper}
 import org.apache.log4j.{FileAppender, Level, LogManager, SimpleLayout}
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.{SparkConf, SparkContext}
 
+/**
+  * Tests the FastSSJoin implementation
+  **/
 object FastSSExp {
   def main(args: Array[String]): Unit = {
-    val filePath = "C:\\Users\\gagli\\Downloads\\syntheticDatasets\\syntheticDatasets\\10Kprofiles.json"
-    val gtPath = "C:\\Users\\gagli\\Downloads\\syntheticDatasets\\syntheticDatasets\\10KIdDuplicates.json"
+    /* Dataset to test */
+    val dataset = "restaurant"
 
-    val logPath = "C:/Users/gagli/Desktop/ACMlog.txt"
+    /* Base path where the dataset is located */
+    val basePath = "datasets/dirty/" + dataset + "/"
 
+    /* Profiles to join */
+    val filePath = basePath + dataset + ".csv"
+
+    /* Groundtruth */
+    val gtPath = basePath + dataset + "_groundtruth.csv"
+
+    /** Log file */
+    val logPath = "log.txt"
+
+    /** Spark configuration */
     val conf = new SparkConf()
       .setAppName("Main")
       .setMaster("local[*]")
       .set("spark.default.parallelism", "4")
-      .set("spark.local.dir", "/data2/tmp")
+      .set("spark.executor.memory", "10g")
 
     val sc = new SparkContext(conf)
 
@@ -32,77 +46,47 @@ object FastSSExp {
     val appender = new FileAppender(layout, logPath, false)
     log.addAppender(appender)
 
-    val profiles = JSONWrapper.loadProfiles(filePath, realIDField = "realProfileID")
-    
-    log.info("[FastSS] Join: matches_soc_sec_id")
-    val soc_sec_id = CommonFunctions.extractField(profiles, "soc_sec_id")
-    soc_sec_id.persist(StorageLevel.MEMORY_AND_DISK)
-    soc_sec_id.count()
+    /* Loads the profiles */
+    val profiles = CSVWrapper.loadProfiles2(filePath, realIDField = "id", header = true)
 
     val t1 = Calendar.getInstance().getTimeInMillis
+    log.info("[FastSS] Join: matches_name")
+    val name = CommonFunctions.extractField(profiles, "name")
+    name.persist(StorageLevel.MEMORY_AND_DISK)
+    name.count()
 
-    //val matches_soc_sec_id = EDJoin.getMatches(soc_sec_id, qgramLength = 2, threshold =  3)
-    val matches_soc_sec_id = FastSS.getMatches(soc_sec_id, threshold = 3)
-    soc_sec_id.unpersist()
-
+    val matches_name = FastSS.getMatches(name, threshold = 2)
+    name.unpersist()
     val t2 = Calendar.getInstance().getTimeInMillis
 
+    log.info("[FastSS] Join: addr")
+    val addr = CommonFunctions.extractField(profiles, "addr")
+    addr.persist(StorageLevel.MEMORY_AND_DISK)
+    addr.count()
 
-    log.info("[FastSS] Join: matches_given_name")
-    val given_name = CommonFunctions.extractField(profiles, "given_name")
-    given_name.persist(StorageLevel.MEMORY_AND_DISK)
-    given_name.count()
-
+    val matches_addr = FastSS.getMatches(addr, threshold = 2)
+    addr.unpersist()
     val t3 = Calendar.getInstance().getTimeInMillis
 
-    //val matches_given_name = EDJoin.getMatches(given_name, qgramLength = 2, threshold =  4)
-    val matches_given_name = FastSS.getMatches(given_name, threshold = 4)
-    given_name.unpersist()
+
+    log.info("[FastSS] Compute common matches")
+    val matches = matches_name.intersection(matches_addr)
+    matches.persist(StorageLevel.MEMORY_AND_DISK)
+    val common = matches.count()
+    matches_name.unpersist()
+    matches_addr.unpersist()
+    log.info("[FastSS] Common matches name - addr: " + common)
 
     val t4 = Calendar.getInstance().getTimeInMillis
 
-
-    log.info("[FastSS] Compute common matches")
-    val common_matches = matches_soc_sec_id.intersection(matches_given_name)
-    common_matches.persist(StorageLevel.MEMORY_AND_DISK)
-    val common = common_matches.count()
-    matches_soc_sec_id.unpersist()
-    matches_given_name.unpersist()
-    log.info("[FastSS] Common matches soc_sec_id - given_name: " + common)
-
-    val t5 = Calendar.getInstance().getTimeInMillis
-
-
-    log.info("[FastSS] Join: matches_surname")
-    val surname = CommonFunctions.extractField(profiles, "surname")
-    surname.persist(StorageLevel.MEMORY_AND_DISK)
-    surname.count()
-
-    val t6 = Calendar.getInstance().getTimeInMillis
-
-    //val matches_surname = EDJoin.getMatches(surname, qgramLength = 2, threshold =  4)
-    val matches_surname = FastSS.getMatches(surname, threshold = 4)
-    surname.unpersist()
-
-    val t7 = Calendar.getInstance().getTimeInMillis
-
-    log.info("[FastSS] Compute common matches")
-    val matches = common_matches.intersection(matches_surname)
-    matches.persist(StorageLevel.MEMORY_AND_DISK)
-    val nm = matches.count()
-    matches_surname.unpersist()
-    val t8 = Calendar.getInstance().getTimeInMillis
-
-
-    log.info("[FastSS] Number of matches " + nm)
-    val joinTime = (t2 - t1) + (t4 - t3) + (t7 - t6)
-    val intTime = (t5 - t4) + (t8 - t7)
-
+    val joinTime = (t2 - t1) + (t3 - t2)
+    val intTime = t3 - t4
 
     log.info("[FastSS] Global join+verification time (s) " + joinTime / 1000.0)
     log.info("[FastSS] Intersection time (s) " + intTime / 1000.0)
 
-
+    /** Performs the transitive closure */
+    val t8 = Calendar.getInstance().getTimeInMillis
     val clusters = ConnectedComponentsClustering.getClusters(profiles, matches.map(x => WeightedEdge(x._1, x._2, 0)), 0)
     clusters.persist(StorageLevel.MEMORY_AND_DISK)
     val cn = clusters.count()
@@ -112,9 +96,10 @@ object FastSSExp {
 
     log.info("[FastSS] Total time (s) " + (t9 - t1) / 1000.0)
 
-    val groundtruth = JSONWrapper.loadGroundtruth(gtPath, firstDatasetAttribute = "d1Id", secondDatasetAttribute = "d2Id")
+    /** Loads the groundtruth */
+    val groundtruth = CSVWrapper.loadGroundtruth(gtPath)
 
-    //Converts the ids in the groundtruth to the autogenerated ones
+    /** Converts the ids in the groundtruth to the autogenerated ones */
     val realIdIds = sc.broadcast(profiles.map { p =>
       (p.originalID, p.id)
     }.collectAsMap())
@@ -133,13 +118,12 @@ object FastSSExp {
       }
     }.filter(_._1 >= 0).collect().toSet
 
-
     log.info("[FastSS] Groundtruth size " + groundtruth.count())
     log.info("[FastSS] New groundtruth size " + newGT.size)
 
     val gt = sc.broadcast(newGT)
 
-
+    /** Computes precision and recall */
     val pcpq = EntityClusterUtils.calcPcPqCluster(clusters, gt)
     log.info("[FastSS] PC " + pcpq._1)
     log.info("[FastSS] PQ " + pcpq._2)

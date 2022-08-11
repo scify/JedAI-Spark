@@ -10,7 +10,7 @@ import org.apache.spark.util.SizeEstimator
 
 /**
   * This version send the index in broadcast, and iterates over the profiles
-  * */
+  **/
 object FastSS {
 
   /**

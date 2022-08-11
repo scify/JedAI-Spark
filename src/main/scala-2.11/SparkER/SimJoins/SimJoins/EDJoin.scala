@@ -167,6 +167,12 @@ object EDJoin {
     candidates
   }
 
+  /**
+    * Perform the ED Join, returning the pairs of documents that satisfies the condition.
+    * @param documents documents to join
+    * @param qgramLength length of the q-grams
+    * @param threshold maximum edit distance
+    * */
   def getMatches(documents: RDD[(Int, String)], qgramLength: Int, threshold: Int): RDD[(Int, Int)] = {
 
     val t1 = Calendar.getInstance().getTimeInMillis
