@@ -184,14 +184,15 @@ object PPJoin {
   /**
     * Returns the pairs that have a similarity greater or equal the threshold
     **/
-  def getMatches(documents: RDD[(Int, String)], threshold: Double, separatorID: Int = -1): RDD[(Int, Int)] = {
+  def getMatches(documents: RDD[(Int, String)], threshold: Double, separatorID: Int = -1): RDD[(Int, Int, Double)] = {
     val log = LogManager.getRootLogger
     val tokenizedDocSort = CommonJsFunctions.tokenizeAndSort(documents)
     val candidates = getCandidates(tokenizedDocSort, threshold, separatorID)
     val t1 = Calendar.getInstance().getTimeInMillis
     val matches = candidates
-      .filter { case ((d1Id, d1Tokens), (d2Id, d2Tokens)) => calcJS(d1Tokens, d2Tokens) >= threshold }
-      .map { case ((d1Id, d1Tokens), (d2Id, d2Tokens)) => (d1Id, d2Id) }
+        .map{case ((d1Id, d1Tokens), (d2Id, d2Tokens)) => ((d1Id, d1Tokens), (d2Id, d2Tokens), calcJS(d1Tokens, d2Tokens))}
+      .filter { case ((d1Id, d1Tokens), (d2Id, d2Tokens), js) => js >= threshold }
+      .map { case ((d1Id, d1Tokens), (d2Id, d2Tokens), js) => (d1Id, d2Id, js) }
     matches.cache()
     val nm = matches.count()
     val t2 = Calendar.getInstance().getTimeInMillis

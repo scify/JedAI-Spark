@@ -15,7 +15,6 @@ import org.apache.spark.{SparkConf, SparkContext}
   **/
 object PPJoinExp {
   def main(args: Array[String]): Unit = {
-
     /* Dataset to test */
     val dataset = "census"
 
